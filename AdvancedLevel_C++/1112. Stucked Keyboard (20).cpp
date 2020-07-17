@@ -1,45 +1,33 @@
-#include <iostream>
-#include <map>
-#include <cstdio>
-#include <set>
+#include<iostream>
+#include<map>
 using namespace std;
-bool sureNoBroken[256];
-int main() {
-    int k, cnt = 1;
-    scanf("%d", &k);
-    string s;
-    cin >> s;
-    map<char, bool> m;
-    set<char> printed;
-    char pre = '#';
-    s = s + '#';
-    for(int i = 0; i < s.length(); i++) {
-        if(s[i] == pre) {
-            cnt++;
-        } else {
-            if(cnt % k != 0) {
-                sureNoBroken[pre] = true;
-            }
-            cnt = 1;
-        }
-        if(i != s.length() - 1) m[s[i]] = (cnt % k == 0);
-        pre = s[i];
+struct node{
+    int val;
+    node *le,*ri;
+};
+map<int ,int> m;
+node* root=NULL;
+int maxdep=-1;
+node* ins(node* tem,int value,int depth){
+    if(tem==NULL){
+        m[depth]++;
+        tem=new(node);
+        tem->val=value;
+        tem->le=tem->ri=NULL;
+        maxdep=maxdep<depth?depth:maxdep;
+    }else if(value<=tem->val){
+        tem->le=ins(tem->le,value,depth+1);
+    }else{
+        tem->ri=ins(tem->ri,value,depth+1);
     }
-    for(int i = 0; i < s.length() - 1; i++) {
-        if(sureNoBroken[s[i]] == true)
-            m[s[i]] = false;
+    return tem;
+}
+int main(){
+    int n,buf;
+    cin>>n;
+    for(int i=0;i<n;i++){
+        cin>>buf;
+        root=ins(root,buf,1);
     }
-    for(int i = 0; i < s.length() - 1; i++) {
-        if(m[s[i]] && printed.find(s[i]) == printed.end()) {
-            printf("%c", s[i]);
-            printed.insert(s[i]);
-        }
-    }
-    printf("\n");
-    for(int i = 0; i < s.length() - 1; i++) {
-        printf("%c", s[i]);
-        if(m[s[i]])
-            i = i + k - 1;
-    }
-    return 0;
+    cout<<m[maxdep]<<" + "<<m[maxdep-1]<<" = "<<m[maxdep-1]+m[maxdep];
 }
